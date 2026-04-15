@@ -1,8 +1,7 @@
-import { astrolabe } from 'iztro';
+import { astro } from 'iztro';
 
 export default {
   async fetch(request, env, ctx) {
-    // CORS ayarları (Frontend'in bu API ile konuşabilmesi için)
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
@@ -13,37 +12,29 @@ export default {
       });
     }
 
-    // Sadece POST isteklerini kabul et (Güvenlik)
     if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: "Vektor Systems - Unauthorized Access." }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      return new Response(JSON.stringify({ error: "Vektor Systems - Unauthorized." }), { 
+        status: 401, 
+        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
       });
     }
 
     try {
-      // Frontend'den (ast.html) gelen JSON verisini al
       const inputData = await request.json();
       
-      // Iztro'ya Subject 01 verilerini gönder ve haritayı matematiksel olarak hesapla
-      const chart = astrolabe({
-        solarDate: inputData.date,       // Örn: '1990-05-20'
-        timeIndex: inputData.timeIndex,  // ZWDS Saat dilimi (0-12 arası indeks)
-        gender: inputData.gender         // 'M' (Erkek) veya 'F' (Kadın)
-      });
+      // Iztro Cinsiyet formatı (Hesaplama için '男' veya '女' parametresi bekliyor)
+      const genderStr = inputData.gender === 'M' ? '男' : '女';
+      
+      // Doğru fonksiyon: astro.bySolar(Tarih, Saat Indeksi, Cinsiyet)
+      const chart = astro.bySolar(inputData.date, inputData.timeIndex, genderStr);
 
-      // Hesaplanan elit veriyi Frontend'e geri gönder
-      return new Response(JSON.stringify({ 
-        status: "success", 
-        data: chart 
-      }), {
+      return new Response(JSON.stringify({ status: "success", data: chart }), {
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
-
     } catch (error) {
       return new Response(JSON.stringify({ error: error.message }), { 
-        status: 500,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        status: 500, 
+        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
       });
     }
   },
