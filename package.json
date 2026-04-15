@@ -1,0 +1,1 @@
+{\n  "name": "vektor-engine",\n  "version": "1.0.0",\n  "description": "A project using iztro dependency",\n  "main": "index.js",\n  "scripts": {\n    "test": "echo 'Error: no test specified' && exit 1"\n  },\n  "dependencies": {\n    "iztro": "*"\n  },\n  "author": "tezcanozer3-beep",\n  "license": "ISC",\n  "homepage": "https://github.com/tezcanozer3-beep/vektor-engine"\n}
